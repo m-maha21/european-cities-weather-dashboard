@@ -23,10 +23,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to display current weather information
     const displayCurrentWeather = (weatherData) => {
+        const currentWeatherInfo = document.getElementById("currentWeatherInfo");
+        // Extract relevant information from the weatherData object
+    const cityName = weatherData.city.name;
+    const date = dayjs().format("MMMM D, YYYY");
+    const iconUrl = `https://openweathermap.org/img/w/${weatherData.list[0].weather[0].icon}.png`;
+    const temperature = Math.round(weatherData.list[0].main.temp - 273.15); // Convert temperature to Celsius
+    const humidity = weatherData.list[0].main.humidity;
+    const windSpeed = weatherData.list[0].wind.speed;
+    // Create HTML content to display current weather information
+    const htmlContent = `
+        <h2>${cityName} - ${date}</h2>
+        <img src="${iconUrl}" alt="Weather Icon">
+        <p>Temperature: ${temperature} °C</p>
+        <p>Humidity: ${humidity}%</p>
+        <p>Wind Speed: ${windSpeed} m/s</p>
+    `;
+
+    // Update the content of the currentWeatherInfo div
+    currentWeatherInfo.innerHTML = htmlContent;
+};
         // Update the HTML to display current weather information
         // You can access data like weatherData.city.name, weatherData.list[0].main.temp, etc.
         // Update the HTML content accordingly
-    };
+
 
     // Function to display 5-day forecast
     const displayForecast = (weatherData) => {
