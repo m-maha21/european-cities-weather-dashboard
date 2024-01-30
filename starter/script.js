@@ -1,15 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const apiKey = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}"; // Replace with your API key
+    const apiKey = "6f565a50399aa39e97325584ff029956"; // Replace with your API key
     const searchForm = document.getElementById("searchForm");
     const cityInput = document.getElementById("cityInput");
     const currentWeatherSection = document.getElementById("currentWeather");
     const forecastSection = document.getElementById("forecast");
     const searchHistorySection = document.getElementById("searchHistory");
+    
 
     // Function to fetch weather data from the OpenWeatherMap API
     const fetchWeatherData = async (city) => {
         // Use the API endpoint to fetch data
-        const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
+        const apiUrl = `api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}`;
         
         try {
             const response = await fetch(apiUrl);
