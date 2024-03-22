@@ -1,86 +1,95 @@
+// Ensure DOM content is loaded before executing JavaScript
 document.addEventListener("DOMContentLoaded", function () {
-    const apiKey = "6f565a50399aa39e97325584ff029956"; 
-    const searchForm = document.getElementById("searchForm");
-    const cityInput = document.getElementById("cityInput");
-    const currentWeatherSection = document.getElementById("currentWeather");
-    const forecastSection = document.getElementById("forecast");
-    const searchHistorySection = document.getElementById("searchHistory");
-    
+  // Define API key
+  const APIKey = "6f565a50399aa39e97325584ff029956";
 
-    // Function to fetch weather data from the OpenWeatherMap API
-    const fetchWeatherData = async (city) => {
-        // Use the API endpoint to fetch data
-        const apiUrl = `api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}`;
-        
-        try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching weather data:", error);
-        }
-    };
+  // Define variables to read HTML elements
+  const searchForm = document.getElementById("search-form");
+  const cityInput = document.getElementById("search-input");
+  const currentWeatherInfoContainer = document.getElementById("currentWeatherInfo");
+  const forecastContainer = document.getElementById("forecast");
+  const history = document.getElementById("history");
 
-    // Function to display current weather information
-    const displayCurrentWeather = (weatherData) => {
-        const currentWeatherInfo = document.getElementById("currentWeatherInfo");
-        // Extract relevant information from the weatherData object
-    const cityName = weatherData.city.name;
-    const date = dayjs().format("MMMM D, YYYY");
-    const iconUrl = `https://openweathermap.org/img/w/${weatherData.list[0].weather[0].icon}.png`;
-    const temperature = Math.round(weatherData.list[0].main.temp - 273.15); // Convert temperature to Celsius
-    const humidity = weatherData.list[0].main.humidity;
-    const windSpeed = weatherData.list[0].wind.speed;
-    // Create HTML content to display current weather information
-    const htmlContent = `
-        <h2>${cityName} - ${date}</h2>
-        <img src="${iconUrl}" alt="Weather Icon">
-        <p>Temperature: ${temperature} °C</p>
-        <p>Humidity: ${humidity}%</p>
-        <p>Wind Speed: ${windSpeed} m/s</p>
+  // When the user submits the form, capture the value entered in the city input
+  searchForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const userInput = cityInput.value;
+    getData(userInput);
+  });
+
+  // Fetch weather data from the API
+  function getData(city) {
+    getCurrentWeather(city);
+    getForecast(city);
+  }
+
+  // Fetch current weather data
+  function getCurrentWeather(city) {
+    const queryURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}`;
+    fetchWeather(queryURL, displayCurrentWeather);
+  }
+
+  // Fetch forecasted weather data
+  function getForecast(city) {
+    const queryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${APIKey}`;
+    fetchWeather(queryURL, displayForecast);
+  }
+
+  // Fetch weather data from the API
+  function fetchWeather(queryURL, callback) {
+    fetch(queryURL)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        callback(data);
+      })
+      .catch(function (error) {
+        console.log("Error fetching weather data:", error);
+      });
+  }
+
+  // Display current weather information
+  function displayCurrentWeather(data) {
+    const temperature = data.main.temp;
+    const description = data.weather[0].description;
+    const humidity = data.main.humidity;
+
+    currentWeatherInfoContainer.innerHTML = `
+      <h2>Current Weather in ${data.name}</h2>
+      <p>Temperature: ${temperature}°C</p>
+      <p>Description: ${description}</p>
+      <p>Humidity: ${humidity}%</p>
     `;
+  }
 
-    // Update the content of the currentWeatherInfo div
-    currentWeatherInfo.innerHTML = htmlContent;
-};
-        // Update the HTML to display current weather information
-        // You can access data like weatherData.city.name, weatherData.list[0].main.temp, etc.
-        // Update the HTML content accordingly
+  // Display forecasted weather information
+  function displayForecast(data) {
+    forecastContainer.innerHTML = "";
+    for (let i = 0; i < data.list.length; i++) {
+      const forecast = data.list[i];
+      const forecastDate = forecast.dt_txt.split(" ")[0];
+      const forecastTime = forecast.dt_txt.split(" ")[1].slice(0, 5);
+      const temperature = forecast.main.temp;
+      const description = forecast.weather[0].description;
 
+      const forecastElement = `
+        <div class="forecast-card col-md-3">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">${forecastDate}</h5>
+              <p class="card-text">Time: ${forecastTime}</p>
+              <p class="card-text">Temperature: ${temperature}°C</p>
+              <p class="card-text">Description: ${description}</p>
+            </div>
+          </div>
+        </div>
+      `;
 
-    // Function to display 5-day forecast
-    const displayForecast = (weatherData) => {
-        // Update the HTML to display 5-day forecast
-        // You can iterate through weatherData.list to get forecast information for each day
-        // Update the HTML content accordingly
-    };
-
-    // Function to display search history
-    const displaySearchHistory = (searchHistory) => {
-        // Update the HTML to display search history
-        // You can use localStorage to store and retrieve search history
-        // Update the HTML content accordingly
-    };
-
-    // Event listener for the form submission
-    searchForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        
-        const city = cityInput.value.trim();
-        
-        if (city !== "") {
-            // Fetch weather data
-            const weatherData = await fetchWeatherData(city);
-
-            // Display current weather
-            displayCurrentWeather(weatherData);
-
-            // Display 5-day forecast
-            displayForecast(weatherData);
-
-            // Update search history
-            // You can use localStorage to store and retrieve search history
-            displaySearchHistory(searchHistory);
-        }
-    });
+      forecastContainer.innerHTML += forecastElement;
+    }
+  }
 });
+
+
+
