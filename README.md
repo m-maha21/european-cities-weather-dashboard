@@ -8,7 +8,7 @@ The Weather Dashboard project aims to create a web application that provides use
 
 ## Application Link
 
-You can access my portfolio [here](https://m-maha21.github.io/european-cities-weather-dashboard/).
+You can access my application [here](https://m-maha21.github.io/european-cities-weather-dashboard/).
 
 ## Table of Contents 
 
